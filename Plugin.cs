@@ -25,14 +25,16 @@ namespace mbm_cheats_menu
         private Rect _menuRect = new(20, 20, 330, 240); // Initial position and size of the menu
         
         // Define separate arrays to store activation status for each tab
-        private readonly bool[] _mainCheatsActivated = new bool[8];
-        private readonly bool[] _specialCheatsActivated = new bool[2]; // Adjust the size as per your requirement
-        private readonly bool[] _interactiveSpotsActivated = new bool[2];
+        private readonly bool[] _mainCheatsActivated = new bool[0];
+        private readonly bool[] _specialCheatsActivated = new bool[0]; // Adjust the size as per your requirement
+        private readonly bool[] _interactiveSpotsActivated = new bool[0];
         
         // Default max values
         private string addGoldAmountText = "0";
         private string addPixyAmountText = "0";
-
+        private string addAchievementPointsAmountText = "0";
+        private string addReputationAmountText = "0";
+        private string addSoulAmountText = "0";
         
         private const string VersionLabel = MyPluginInfo.PLUGIN_VERSION;
 
@@ -56,7 +58,7 @@ namespace mbm_cheats_menu
             // Log the plugin's version number and successful startup
             Logger.LogInfo($"Plugin mbm-cheats-menu v{VersionLabel} loaded!");
         }
-
+        
         /// <summary>
         /// Handles toggling the menu on and off with the Insert or F1 key.
         /// </summary>
@@ -244,6 +246,12 @@ namespace mbm_cheats_menu
             // Draw Achievement Points option
             DrawAddAchievementPointsOption();
             
+            // Draw Reputation option
+            DrawAddReputationOption();
+            
+            // Draw Soul Option
+            DrawAddSoulOption();
+            
             GUILayout.EndVertical();
         }
 
@@ -286,16 +294,6 @@ namespace mbm_cheats_menu
         {
         }
 
-
-        /// <summary>
-        /// Handles button click for toggling doors in the scene
-        /// </summary>
-        private static void GiveCoins()
-        {
-            // Debug log the action being performed
-            Debug.Log("Give Coins");
-        }
-
         /// <summary>
         /// Draws a small dot with a green color if the activation status is true, and red if it's false.
         /// This method uses the current tab activation status array to determine the dot color.
@@ -318,12 +316,6 @@ namespace mbm_cheats_menu
         {
             // Begin horizontal layout for the Plushy Uses option
             GUILayout.BeginHorizontal();
-
-            // Load the gold icon from resources
-            Sprite goldIcon = Resources.Load<Sprite>("icon_resource_gold_32px");
-            
-            // Draw the icon
-            GUILayout.Label(new GUIContent(goldIcon.texture), GUILayout.Width(20), GUILayout.Height(20)); // Adjust width and height as needed
             
             // Add a label for the text field
             GUILayout.Label("Add Gold:"); // The text that appears next to the text field
@@ -395,24 +387,92 @@ namespace mbm_cheats_menu
             GUILayout.Label("Add Achievement Points:"); // The text that appears next to the text field
 
             // Draw the text field and capture user input
-            addPixyAmountText = GUILayout.TextField(addPixyAmountText, GUILayout.Width(40)); // The text field that the user can edit
+            addAchievementPointsAmountText = GUILayout.TextField(addAchievementPointsAmountText, GUILayout.Width(40)); // The text field that the user can edit
 
             // Try to parse the input text as an integer
-            int addPixyAmountInt;
-            if (int.TryParse(addPixyAmountText, out addPixyAmountInt))
+            int addAchievementPointsAmountInt;
+            if (int.TryParse(addAchievementPointsAmountText, out addAchievementPointsAmountInt))
             {
                 // Check if the parsed integer value is greater than 0
-                if (addPixyAmountInt > 0)
+                if (addAchievementPointsAmountInt > 0)
                 {
                     // Draw the add button with custom width and height
                     if (GUILayout.Button("Add", GUILayout.Width(40), GUILayout.Height(20)))
                     {
-                        GameManager.Instance.PlayerData.FloraPixyCount += addPixyAmountInt;
+                        GameManager.Instance.PlayerData.AchievementPoint += addAchievementPointsAmountInt;
                     }
                 }
             }
 
             // End horizontal layout for the Add Pixy option
+            GUILayout.EndHorizontal();
+        }
+        
+        /// <summary>
+        /// Draws the Add Reputation option in the mod menu
+        /// </summary>
+        private void DrawAddReputationOption()
+        {
+            // Begin horizontal layout for the Add Reputation option
+            GUILayout.BeginHorizontal();
+
+            // Add a label for the text field
+            GUILayout.Label("Add Reputation:"); // The text that appears next to the text field
+
+            // Draw the text field and capture user input
+            addReputationAmountText = GUILayout.TextField(addReputationAmountText, GUILayout.Width(40)); // The text field that the user can edit
+
+            // Try to parse the input text as an integer
+            int addReputationAmountInt;
+            if (int.TryParse(addReputationAmountText, out addReputationAmountInt))
+            {
+                // Check if the parsed integer value is greater than 0
+                if (addReputationAmountInt > 0)
+                {
+                    // Draw the add button with custom width and height
+                    if (GUILayout.Button("Add", GUILayout.Width(40), GUILayout.Height(20)))
+                    {
+                        // Add Reputation points to the player's data
+                        GameManager.Instance.PlayerData.Reputation += addReputationAmountInt;
+                    }
+                }
+            }
+
+            // End horizontal layout for the Add Reputation option
+            GUILayout.EndHorizontal();
+        }
+        
+        /// <summary>
+        /// Draws the Add Soul option in the mod menu
+        /// </summary>
+        private void DrawAddSoulOption()
+        {
+            // Begin horizontal layout for the Add Soul option
+            GUILayout.BeginHorizontal();
+
+            // Add a label for the text field
+            GUILayout.Label("Add Soul:"); // The text that appears next to the text field
+
+            // Draw the text field and capture user input
+            addSoulAmountText = GUILayout.TextField(addSoulAmountText, GUILayout.Width(40)); // The text field that the user can edit
+
+            // Try to parse the input text as an integer
+            int addSoulAmountInt;
+            if (int.TryParse(addSoulAmountText, out addSoulAmountInt))
+            {
+                // Check if the parsed integer value is greater than 0
+                if (addSoulAmountInt > 0)
+                {
+                    // Draw the add button with custom width and height
+                    if (GUILayout.Button("Add", GUILayout.Width(40), GUILayout.Height(20)))
+                    {
+                        // Add Soul points to the player's data
+                        GameManager.Instance.PlayerData.Soul += addSoulAmountInt;
+                    }
+                }
+            }
+
+            // End horizontal layout for the Add Soul option
             GUILayout.EndHorizontal();
         }
     }
