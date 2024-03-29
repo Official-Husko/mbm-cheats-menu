@@ -25,7 +25,7 @@ namespace mbm_cheats_menu
         private Rect _menuRect = new(20, 20, 330, 240); // Initial position and size of the menu
         
         // Define separate arrays to store activation status for each tab
-        private readonly bool[] _mainCheatsActivated = new bool[0];
+        private readonly bool[] _mainCheatsActivated = new bool[1];
         private readonly bool[] _specialCheatsActivated = new bool[0]; // Adjust the size as per your requirement
         private readonly bool[] _interactiveSpotsActivated = new bool[0];
         
@@ -42,6 +42,7 @@ namespace mbm_cheats_menu
         // List to store button labels and corresponding actions for the current cheats tab
         private readonly List<(string label, Action action)> _mainCheatsButtonActions = new()
         {
+            ("Test Event", EventTest),
             // Add more buttons and actions here
         };
 
@@ -258,7 +259,7 @@ namespace mbm_cheats_menu
             
             GUILayout.EndVertical();
         }
-
+        
         /// <summary>
         /// Draws the Special Cheats tab in the mod's UI
         /// </summary>
@@ -311,6 +312,18 @@ namespace mbm_cheats_menu
             GUIStyle dotStyle = new GUIStyle(GUI.skin.label); // Create a new GUIStyle for the dot label
             dotStyle.normal.textColor = dotColor; // Set the color of the dot label
             GUILayout.Label("●", dotStyle, GUILayout.Width(20), GUILayout.Height(20)); // Draw dot with the specified style
+        }
+
+        /// <summary>
+        /// Handles button click for toggling balls collision
+        /// </summary>
+        private static void EventTest()
+        {
+            // Debug log the action being performed
+            Debug.Log("Test Event Triggered");
+
+            // Pattern to match ball GameObjects
+            PlayData.Instance.AddPlayEvent(EPlayEventType.RunawayGirl, 5F);
         }
         
         /// <summary>
