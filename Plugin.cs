@@ -35,6 +35,7 @@ namespace mbm_cheats_menu
         private string addAchievementPointsAmountText = "0";
         private string addReputationAmountText = "0";
         private string addSoulAmountText = "0";
+        private string addAllItemsAmountText = "0";
         
         private const string VersionLabel = MyPluginInfo.PLUGIN_VERSION;
 
@@ -251,6 +252,9 @@ namespace mbm_cheats_menu
             
             // Draw Soul Option
             DrawAddSoulOption();
+            
+            // Draw ADd all items option
+            DrawAddAllItemsOption();
             
             GUILayout.EndVertical();
         }
@@ -473,6 +477,91 @@ namespace mbm_cheats_menu
             }
 
             // End horizontal layout for the Add Soul option
+            GUILayout.EndHorizontal();
+        }
+        
+        /// <summary>
+        /// Draws the Add All Items option in the mod menu
+        /// </summary>
+        private void DrawAddAllItemsOption()
+        {
+            // Begin horizontal layout for the Add All Items option
+            GUILayout.BeginHorizontal();
+
+            // Add a label for the text field
+            GUILayout.Label("Add All Items:"); // The text that appears next to the text field
+
+            // Draw the text field and capture user input
+            addAllItemsAmountText = GUILayout.TextField(addAllItemsAmountText, GUILayout.Width(40)); // The text field that the user can edit
+
+            // Try to parse the input text as an integer
+            int addAllItemsAmountInt;
+            if (int.TryParse(addAllItemsAmountText, out addAllItemsAmountInt))
+            {
+                // Check if the parsed integer value is greater than 0
+                if (addAllItemsAmountInt > 0)
+                {
+                    // Draw the add button with custom width and height
+                    if (GUILayout.Button("Add", GUILayout.Width(40), GUILayout.Height(20)))
+                    {
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_HumanDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_ElfDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_DwarfDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_NekoDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_InuDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_UsagiDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_HitsujiDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_DragonianDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_GoblinDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_OrcDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_WerewolfDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_MinotaurDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_SalamanderDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_OriginDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.BodyFluid, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.VenerealDiseaseDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.HumanPheromone, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.ElfManaEngine, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.DawrfHeart, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.InuMammaryGlandDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.NecoOvarianDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.UsagiWombDna, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.HitsujiHorn, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.DragonTailMeat, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.GoblinSemen, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.OrcHeart, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.WerewolfTail, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.MinotaurSkin, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_SalamanderScalePiece, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.TattooRemovalInjection, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.HealthRecoveryInjection, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.MammaryGlandRecoveryInjection, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.VenerealDiseaseRecoveryInjection, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.OvumRecoveryInjection, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_FertilityMedication, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_Aphrodisiac, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_ViOgra, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_CosmeticPill, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_MonsterCosmeticPill, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_SlaveCosmeticPill, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_TraitUpgradePill, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Milk, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.LoliMilk, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.HumanMilk, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.ElfMilk, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.DwarfMilk, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.FurryMilk, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.SmallFurryMilk, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.DragonianMilk, ESector.Inventory, new ValueTuple<int, int>(1, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_Sensitivity3000x, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_Washer, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_Condom, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_LoveGel, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                        GameManager.Instance.PlayerData.NewItem(EItemType.Item_TentacleEgg, ESector.Inventory, new ValueTuple<int, int>(0, 0), -1, addAllItemsAmountInt, true);
+                    }
+                }
+            }
+            // End horizontal layout for the Add All Items option
             GUILayout.EndHorizontal();
         }
     }
