@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using BepInEx;
 using MBMScripts;
@@ -12,17 +13,16 @@ namespace mbm_cheats_menu
         private enum Tab
         {
             MainCheats,
-            SpecialCheats,
+            EventsCheats,
             InteractiveSpots
         }
 
         private Tab _currentTab = Tab.MainCheats;
         private bool _showMenu;
-        private Rect _menuRect = new(20, 20, 330, 240); // Initial position and size of the menu
+        private Rect _menuRect = new(20, 20, 630, 240); // Initial position and size of the menu
         
         // Define separate arrays to store activation status for each tab
-        private readonly bool[] _mainCheatsActivated = new bool[1];
-        private readonly bool[] _specialCheatsActivated = new bool[0]; // Adjust the size as per your requirement
+        private readonly bool[] _mainCheatsActivated = new bool[0];
         private readonly bool[] _interactiveSpotsActivated = new bool[0];
         
         // Default max values
@@ -34,11 +34,13 @@ namespace mbm_cheats_menu
         private string _addAllItemsAmountText = "0";
         
         private const string VersionLabel = MyPluginInfo.PLUGIN_VERSION;
+        private int _selectedOptionIndex = 0;
+        private Vector2 _scrollPosition = Vector2.zero;
+        private readonly List<EPlayEventType> _availableEvents = new List<EPlayEventType>();
 
         // List to store button labels and corresponding actions for the current cheats tab
         private readonly List<(string label, Action action)> _mainCheatsButtonActions = new()
         {
-            ("Test Event", EventTest),
             // Add more buttons and actions here
         };
 
@@ -55,6 +57,9 @@ namespace mbm_cheats_menu
         {
             // Log the plugin's version number and successful startup
             Logger.LogInfo($"Plugin mbm-cheats-menu v{VersionLabel} loaded!");
+
+            // Fetch available events
+            FetchAvailableEvents();
         }
         
         /// <summary>
@@ -122,7 +127,7 @@ namespace mbm_cheats_menu
             // Draw the Main Cheats tab button
             DrawTabButton(Tab.MainCheats, "Main Cheats");
             // Draw the Special Cheats tab button
-            DrawTabButton(Tab.SpecialCheats, "Special Cheats");
+            DrawTabButton(Tab.EventsCheats, "Event Cheats");
             // Draw Interactive Spots tab button
             DrawTabButton(Tab.InteractiveSpots, "Interactive Spots");
             GUILayout.EndHorizontal();
@@ -135,8 +140,8 @@ namespace mbm_cheats_menu
                     DrawMainCheatsTab();
                     break;
                 // Draw the Special Cheats tab
-                case Tab.SpecialCheats:
-                    DrawSpecialCheatsTab();
+                case Tab.EventsCheats:
+                    DrawEventsCheatsTab();
                     break;
                 // Draw the Interactive Spots tab
                 case Tab.InteractiveSpots:
@@ -176,9 +181,8 @@ namespace mbm_cheats_menu
                 case Tab.MainCheats:
                     // Return the activation status array for the main cheats tab
                     return _mainCheatsActivated;
-                case Tab.SpecialCheats:
-                    // Return the activation status array for the special cheats tab
-                    return _specialCheatsActivated;
+                case Tab.EventsCheats:
+                    return null;
                 case Tab.InteractiveSpots:
                     // Return the activation status array for the interactive spots tab
                     return _interactiveSpotsActivated;
@@ -257,7 +261,7 @@ namespace mbm_cheats_menu
         /// <summary>
         /// Draws the Special Cheats tab in the mod's UI
         /// </summary>
-        private void DrawSpecialCheatsTab()
+        private void DrawEventsCheatsTab()
         {
             // Begin vertical layout for the tab
             GUILayout.BeginVertical();
@@ -267,9 +271,6 @@ namespace mbm_cheats_menu
             {
                 // Begin horizontal layout for the button row
                 GUILayout.BeginHorizontal();
-
-                // Draw an activation dot based on the activation status
-                DrawActivationDot(_specialCheatsActivated[i]);
 
                 // Draw a button for the special cheat
                 if (GUILayout.Button(_specialCheatsButtonActions[i].label))
@@ -284,6 +285,10 @@ namespace mbm_cheats_menu
                 // End the horizontal layout for the button row
                 GUILayout.EndHorizontal();
             }
+            
+            // Draw Event option
+            DrawEventsOption();
+            
             // End the vertical layout for the tab
             GUILayout.EndVertical();
         }
@@ -307,17 +312,14 @@ namespace mbm_cheats_menu
             dotStyle.normal.textColor = dotColor; // Set the color of the dot label
             GUILayout.Label("●", dotStyle, GUILayout.Width(20), GUILayout.Height(20)); // Draw dot with the specified style
         }
-
-        /// <summary>
-        /// Handles button click for toggling balls collision
-        /// </summary>
-        private static void EventTest()
+        
+        private void DrawBlueDot()
         {
-            // Debug log the action being performed
-            Debug.Log("Test Event Triggered");
-
-            // Pattern to match ball GameObjects
-            PlayData.Instance.AddPlayEvent(EPlayEventType.RunawayGirl);
+            GUILayout.Space(10); // Add some space to center the dot vertically
+            Color blueDotColor = new Color(0.0f, 0.5f, 1.0f); // blue because nice
+            GUIStyle dotStyle = new GUIStyle(GUI.skin.label); // Create a new GUIStyle for the dot label
+            dotStyle.normal.textColor = blueDotColor; // Set the color of the dot label
+            GUILayout.Label("●", dotStyle, GUILayout.Width(20), GUILayout.Height(20)); // Draw dot with the specified style
         }
         
         /// <summary>
@@ -327,6 +329,9 @@ namespace mbm_cheats_menu
         {
             // Begin horizontal layout for the Plushy Uses option
             GUILayout.BeginHorizontal();
+            
+            // Draw Blue Dot
+            DrawBlueDot();
             
             // Add a label for the text field
             GUILayout.Label("Add Gold:"); // The text that appears next to the text field
@@ -359,6 +364,9 @@ namespace mbm_cheats_menu
         {
             // Begin horizontal layout for the Add Pixy option
             GUILayout.BeginHorizontal();
+            
+            // Draw Blue Dot
+            DrawBlueDot();
 
             // Add a label for the text field
             GUILayout.Label("Add Pixy:"); // The text that appears next to the text field
@@ -392,6 +400,9 @@ namespace mbm_cheats_menu
             // Begin horizontal layout for the Add Pixy option
             GUILayout.BeginHorizontal();
 
+            // Draw Blue Dot
+            DrawBlueDot();
+            
             // Add a label for the text field
             GUILayout.Label("Add Achievement Points:"); // The text that appears next to the text field
 
@@ -424,6 +435,9 @@ namespace mbm_cheats_menu
             // Begin horizontal layout for the Add Reputation option
             GUILayout.BeginHorizontal();
 
+            // Draw Blue Dot
+            DrawBlueDot();
+            
             // Add a label for the text field
             GUILayout.Label("Add Reputation:"); // The text that appears next to the text field
 
@@ -458,6 +472,9 @@ namespace mbm_cheats_menu
             // Begin horizontal layout for the Add Soul option
             GUILayout.BeginHorizontal();
 
+            // Draw Blue Dot
+            DrawBlueDot();
+            
             // Add a label for the text field
             GUILayout.Label("Add Soul:"); // The text that appears next to the text field
 
@@ -492,6 +509,9 @@ namespace mbm_cheats_menu
             // Begin horizontal layout for the Add All Items option
             GUILayout.BeginHorizontal();
 
+            // Draw Blue Dot
+            DrawBlueDot();
+            
             // Add a label for the text field
             GUILayout.Label("Add All Items:"); // The text that appears next to the text field
 
@@ -566,6 +586,56 @@ namespace mbm_cheats_menu
                 }
             }
             // End horizontal layout for the Add All Items option
+            GUILayout.EndHorizontal();
+        }
+        
+        private void FetchAvailableEvents()
+        {
+            // Get all enum values from EPlayEventType
+            Type enumType = typeof(MBMScripts.EPlayEventType);
+            if (enumType.IsEnum)
+            {
+                Array enumValues = Enum.GetValues(enumType);
+                foreach (var value in enumValues)
+                {
+                    _availableEvents.Add((EPlayEventType)value);
+                }
+            }
+        }
+        
+        private void DrawEventsOption()
+        {
+            GUILayout.BeginHorizontal();
+
+            // Draw the dot
+            DrawBlueDot();
+
+            // Label for the selection
+            GUILayout.Label("Select Event:");
+
+            // Scroll view for the selection
+            _scrollPosition = GUILayout.BeginScrollView(_scrollPosition, GUILayout.Height(100), GUILayout.Width(230));
+            {
+                // Convert availableEvents to string array for dropdownOptions
+                string[] dropdownOptions = _availableEvents.ConvertAll<string>(x => x.ToString()).ToArray();
+
+                // Drop-down menu to select an option
+                _selectedOptionIndex = GUILayout.SelectionGrid(_selectedOptionIndex, dropdownOptions, 1, GUILayout.Width(200));
+            }
+            GUILayout.EndScrollView();
+            
+            if (GUILayout.Button("Execute"))
+            {
+                // Check if a valid option is selected
+                if (_selectedOptionIndex >= 0 && _selectedOptionIndex < _availableEvents.Count)
+                {
+                    // Get the selected event from availableEvents
+                    EPlayEventType selectedEvent = _availableEvents[_selectedOptionIndex];
+
+                    // Add the selected event to PlayData
+                    PlayData.Instance.AddPlayEvent(selectedEvent);
+                }
+            }
             GUILayout.EndHorizontal();
         }
     }
