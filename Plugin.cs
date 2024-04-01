@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using BepInEx;
 using MBMScripts;
 using UnityEngine;
+using HarmonyLib;
 
 namespace mbm_cheats_menu
 {
     [BepInPlugin("husko.monsterblackmarket.cheats", "Monster Black Market Cheats", MyPluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
+        private Harmony harmony;
+
         private enum Tab
         {
             MainCheats,
@@ -61,6 +64,9 @@ namespace mbm_cheats_menu
 
             // Fetch available events
             FetchAvailableEvents();
+            
+            // Initialize the Harmony instance
+            harmony = new Harmony("husko.monsterblackmarket.cheats");
         }
         
         /// <summary>
@@ -802,17 +808,23 @@ namespace mbm_cheats_menu
 
             // Draw the dot
             DrawBlueDot();
-            
+    
             if (GUILayout.Button("Test Cheat"))
             {
-                // Fetch available achievements
-                GameManager.Instance.BrainwashAmilia();
-                GameManager.Instance.BrainwashBarbara();
-                GameManager.Instance.BrainwashFlora();
-                GameManager.Instance.BrainwashLena();
-                GameManager.Instance.BrainwashNiel();
-                GameManager.Instance.BrainwashSena();
+                // Attempt to apply patches
+                harmony.PatchAll(typeof(Patches));
+
+                // Check if patches were successfully applied
+                if (Patches.patchesApplied)
+                {
+                    Debug.Log("Patches applied successfully.");
+                }
+                else
+                {
+                    Debug.LogError("Failed to apply patches. Check the Harmony patches.");
+                }
             }
+
             GUILayout.EndHorizontal();
         }
     }
