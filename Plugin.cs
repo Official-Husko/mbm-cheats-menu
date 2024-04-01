@@ -1,5 +1,4 @@
-using System;
-using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using BepInEx;
 using MBMScripts;
@@ -14,16 +13,16 @@ namespace mbm_cheats_menu
         {
             MainCheats,
             EventsCheats,
-            InteractiveSpots
+            NpcCheats
         }
 
         private Tab _currentTab = Tab.MainCheats;
         private bool _showMenu;
-        private Rect _menuRect = new(20, 20, 630, 280); // Initial position and size of the menu
+        private Rect _menuRect = new(20, 20, 630, 380); // Initial position and size of the menu
         
         // Define separate arrays to store activation status for each tab
         private readonly bool[] _mainCheatsActivated = new bool[0];
-        private readonly bool[] _interactiveSpotsActivated = new bool[0];
+        private readonly bool[] _npcCheatsActivated = new bool[0];
         
         // Default max values
         private string _addGoldAmountText = "0";
@@ -37,6 +36,8 @@ namespace mbm_cheats_menu
         private int _selectedOptionIndex = 0;
         private Vector2 _scrollPosition = Vector2.zero;
         private readonly List<EPlayEventType> _availableEvents = new List<EPlayEventType>();
+        private readonly List<EAchievement> _availableAchievements = new List<EAchievement>();
+        private readonly List<ELikeability> _availableLikeabilities = new List<ELikeability>();
 
         // List to store button labels and corresponding actions for the current cheats tab
         private readonly List<(string label, Action action)> _mainCheatsButtonActions = new()
@@ -106,7 +107,7 @@ namespace mbm_cheats_menu
             if (GUI.Button(new Rect(authorLabelX, authorLabelY, authorLabelWidth, 20), "<color=cyan>by</color> <color=yellow>Official-Husko</color>", GUIStyle.none))
             {
                 // Open a link in the user's browser when the label is clicked
-                Application.OpenURL("https://github.com/Official-Husko/Churn-Vector-Cheats");
+                Application.OpenURL("https://github.com/Official-Husko/mbm-cheats-menu");
             }
         }
 
@@ -129,7 +130,7 @@ namespace mbm_cheats_menu
             // Draw the Special Cheats tab button
             DrawTabButton(Tab.EventsCheats, "Event Cheats");
             // Draw Interactive Spots tab button
-            DrawTabButton(Tab.InteractiveSpots, "Interactive Spots");
+            DrawTabButton(Tab.NpcCheats, "NPC Cheats");
             GUILayout.EndHorizontal();
 
             // Draw content based on the selected tab
@@ -144,8 +145,8 @@ namespace mbm_cheats_menu
                     DrawEventsCheatsTab();
                     break;
                 // Draw the Interactive Spots tab
-                case Tab.InteractiveSpots:
-                    DrawInteractiveSpotsTab();
+                case Tab.NpcCheats:
+                    DrawNpcCheatsTab();
                     break;
             }
 
@@ -183,9 +184,9 @@ namespace mbm_cheats_menu
                     return _mainCheatsActivated;
                 case Tab.EventsCheats:
                     return null;
-                case Tab.InteractiveSpots:
+                case Tab.NpcCheats:
                     // Return the activation status array for the interactive spots tab
-                    return _interactiveSpotsActivated;
+                    return _npcCheatsActivated;
                 default:
                     // If the tab is not recognized, return null
                     return null;
@@ -255,8 +256,14 @@ namespace mbm_cheats_menu
             // Draw ADd all items option
             DrawAddAllItemsOption();
             
+            // Draw Give All Achievements option
+            DrawAchievementsOption();
+            
             // Draw Call Dealer option
             DrawCallDealerOption();
+            
+            // Draw Clear Payment option
+            DrawClearPaymentOption();
             
             // End the vertical layout
             GUILayout.EndVertical();
@@ -298,8 +305,22 @@ namespace mbm_cheats_menu
         }
         
         // Draws the Interactive Spots tab in the mod's UI
-        private void DrawInteractiveSpotsTab()
+        private void DrawNpcCheatsTab()
         {
+            // Begin vertical layout for the tab
+            GUILayout.BeginVertical();
+
+            // Draw brainwash special npc option
+            DrawBrainwashSpecialNpcsOption();
+            
+            // Draw likeability option
+            DrawLikeabilityOption();
+            
+            // Draw Test option
+            DrawTestCheatOption();
+            
+            // End the vertical layout for the tab
+            GUILayout.EndVertical();
         }
 
         /// <summary>
@@ -449,8 +470,7 @@ namespace mbm_cheats_menu
             _addReputationAmountText = GUILayout.TextField(_addReputationAmountText, GUILayout.Width(40)); // The text field that the user can edit
 
             // Try to parse the input text as an integer
-            int addReputationAmountInt;
-            if (int.TryParse(_addReputationAmountText, out addReputationAmountInt))
+            if (int.TryParse(_addReputationAmountText, out var addReputationAmountInt))
             {
                 // Check if the parsed integer value is greater than 0
                 if (addReputationAmountInt > 0)
@@ -486,8 +506,7 @@ namespace mbm_cheats_menu
             _addSoulAmountText = GUILayout.TextField(_addSoulAmountText, GUILayout.Width(40)); // The text field that the user can edit
 
             // Try to parse the input text as an integer
-            int addSoulAmountInt;
-            if (int.TryParse(_addSoulAmountText, out addSoulAmountInt))
+            if (int.TryParse(_addSoulAmountText, out var addSoulAmountInt))
             {
                 // Check if the parsed integer value is greater than 0
                 if (addSoulAmountInt > 0)
@@ -523,8 +542,7 @@ namespace mbm_cheats_menu
             _addAllItemsAmountText = GUILayout.TextField(_addAllItemsAmountText, GUILayout.Width(40)); // The text field that the user can edit
 
             // Try to parse the input text as an integer
-            int addAllItemsAmountInt;
-            if (int.TryParse(_addAllItemsAmountText, out addAllItemsAmountInt))
+            if (int.TryParse(_addAllItemsAmountText, out var addAllItemsAmountInt))
             {
                 // Check if the parsed integer value is greater than 0
                 if (addAllItemsAmountInt > 0)
@@ -602,7 +620,10 @@ namespace mbm_cheats_menu
                 Array enumValues = Enum.GetValues(enumType);
                 foreach (var value in enumValues)
                 {
-                    _availableEvents.Add((EPlayEventType)value);
+                    if ((EPlayEventType)value != EPlayEventType.None)
+                    {
+                        _availableEvents.Add((EPlayEventType)value);
+                    }
                 }
             }
         }
@@ -694,6 +715,103 @@ namespace mbm_cheats_menu
             {
                 // Fetch available achievements
                 PlayData.Instance.CallMarket(true);
+            }
+            GUILayout.EndHorizontal();
+        }
+        
+        private void DrawClearPaymentOption()
+        {
+            GUILayout.BeginHorizontal();
+
+            // Draw the dot
+            DrawBlueDot();
+            
+            if (GUILayout.Button("Clear Payment"))
+            {
+                // Fetch available achievements
+                PlayData.Instance.PaySeqList.Clear();
+            }
+            GUILayout.EndHorizontal();
+        }
+        
+        private void DrawBrainwashSpecialNpcsOption()
+        {
+            GUILayout.BeginHorizontal();
+
+            // Draw the dot
+            DrawBlueDot();
+            
+            if (GUILayout.Button("Brainwash Special NPC's"))
+            {
+                // Fetch available achievements
+                GameManager.Instance.BrainwashAmilia();
+                GameManager.Instance.BrainwashBarbara();
+                GameManager.Instance.BrainwashFlora();
+                GameManager.Instance.BrainwashLena();
+                GameManager.Instance.BrainwashNiel();
+                GameManager.Instance.BrainwashSena();
+            }
+            GUILayout.EndHorizontal();
+        }
+        
+        private void FetchAvailableLikeabilities()
+        {
+            // Get all enum values from EPlayEventType
+            Type enumType = typeof(MBMScripts.ELikeability);
+            if (enumType.IsEnum)
+            {
+                Array enumValues = Enum.GetValues(enumType);
+                foreach (var value in enumValues)
+                {
+                    if ((ELikeability)value != ELikeability.None)
+                    {
+                        _availableLikeabilities.Add((ELikeability)value);
+                    }
+                }
+            }
+        }
+        
+        private void DrawLikeabilityOption()
+        {
+            GUILayout.BeginHorizontal();
+
+            // Draw the dot
+            DrawBlueDot();
+            
+            if (GUILayout.Button("Give All Likeabilities"))
+            {
+                // Fetch available achievements
+                FetchAvailableLikeabilities();
+                
+                // Add all achievements to PlayData
+                foreach (ELikeability likeability in _availableLikeabilities)
+                {
+                    //print current achievement
+                    if (likeability != ELikeability.None)
+                    {
+                        PlayData.Instance.SetLikeability(likeability, 9999);
+                    }
+                }
+            }
+            GUILayout.EndHorizontal();
+        }
+        
+        private void DrawTestCheatOption()
+        {
+            GUILayout.BeginHorizontal();
+
+            // Draw the dot
+            DrawBlueDot();
+            
+            if (GUILayout.Button("Test Cheat"))
+            {
+                // Fetch available achievements
+                GameManager.Instance.BrainwashAmilia();
+                GameManager.Instance.BrainwashBarbara();
+                GameManager.Instance.BrainwashFlora();
+                GameManager.Instance.BrainwashLena();
+                GameManager.Instance.BrainwashNiel();
+                GameManager.Instance.BrainwashSena();
             }
             GUILayout.EndHorizontal();
         }
