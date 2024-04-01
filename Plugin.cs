@@ -3,15 +3,12 @@ using System.Collections.Generic;
 using BepInEx;
 using MBMScripts;
 using UnityEngine;
-using HarmonyLib;
 
 namespace mbm_cheats_menu
 {
     [BepInPlugin("husko.monsterblackmarket.cheats", "Monster Black Market Cheats", MyPluginInfo.PLUGIN_VERSION)]
     public class Plugin : BaseUnityPlugin
     {
-        private Harmony harmony;
-
         private enum Tab
         {
             MainCheats,
@@ -21,7 +18,7 @@ namespace mbm_cheats_menu
 
         private Tab _currentTab = Tab.MainCheats;
         private bool _showMenu;
-        private Rect _menuRect = new(20, 20, 630, 380); // Initial position and size of the menu
+        private Rect _menuRect = new(20, 20, 450, 300); // Initial position and size of the menu
         
         // Define separate arrays to store activation status for each tab
         private readonly bool[] _mainCheatsActivated = new bool[0];
@@ -64,9 +61,6 @@ namespace mbm_cheats_menu
 
             // Fetch available events
             FetchAvailableEvents();
-            
-            // Initialize the Harmony instance
-            harmony = new Harmony("husko.monsterblackmarket.cheats");
         }
         
         /// <summary>
@@ -321,9 +315,6 @@ namespace mbm_cheats_menu
             
             // Draw likeability option
             DrawLikeabilityOption();
-            
-            // Draw Test option
-            DrawTestCheatOption();
             
             // End the vertical layout for the tab
             GUILayout.EndVertical();
@@ -799,32 +790,6 @@ namespace mbm_cheats_menu
                     }
                 }
             }
-            GUILayout.EndHorizontal();
-        }
-        
-        private void DrawTestCheatOption()
-        {
-            GUILayout.BeginHorizontal();
-
-            // Draw the dot
-            DrawBlueDot();
-    
-            if (GUILayout.Button("Test Cheat"))
-            {
-                // Attempt to apply patches
-                harmony.PatchAll(typeof(Patches));
-
-                // Check if patches were successfully applied
-                if (Patches.patchesApplied)
-                {
-                    Debug.Log("Patches applied successfully.");
-                }
-                else
-                {
-                    Debug.LogError("Failed to apply patches. Check the Harmony patches.");
-                }
-            }
-
             GUILayout.EndHorizontal();
         }
     }
