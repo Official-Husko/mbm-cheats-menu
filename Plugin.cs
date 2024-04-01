@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using BepInEx;
@@ -19,7 +19,7 @@ namespace mbm_cheats_menu
 
         private Tab _currentTab = Tab.MainCheats;
         private bool _showMenu;
-        private Rect _menuRect = new(20, 20, 630, 240); // Initial position and size of the menu
+        private Rect _menuRect = new(20, 20, 630, 280); // Initial position and size of the menu
         
         // Define separate arrays to store activation status for each tab
         private readonly bool[] _mainCheatsActivated = new bool[0];
@@ -255,6 +255,10 @@ namespace mbm_cheats_menu
             // Draw ADd all items option
             DrawAddAllItemsOption();
             
+            // Draw Call Dealer option
+            DrawCallDealerOption();
+            
+            // End the vertical layout
             GUILayout.EndVertical();
         }
         
@@ -635,6 +639,61 @@ namespace mbm_cheats_menu
                     // Add the selected event to PlayData
                     PlayData.Instance.AddPlayEvent(selectedEvent);
                 }
+            }
+            GUILayout.EndHorizontal();
+        }
+        
+        private void FetchAvailableAchievements()
+        {
+            // Get all enum values from EPlayEventType
+            Type enumType = typeof(MBMScripts.EAchievement);
+            if (enumType.IsEnum)
+            {
+                Array enumValues = Enum.GetValues(enumType);
+                foreach (var value in enumValues)
+                {
+                    _availableAchievements.Add((EAchievement)value);
+                    print((EAchievement)value);
+                }
+            }
+        }
+        
+        private void DrawAchievementsOption()
+        {
+            GUILayout.BeginHorizontal();
+
+            // Draw the dot
+            DrawBlueDot();
+            
+            if (GUILayout.Button("Give Most Achievements"))
+            {
+                // Fetch available achievements
+                FetchAvailableAchievements();
+                
+                // Add all achievements to PlayData
+                foreach (EAchievement achievement in _availableAchievements)
+                {
+                    //print current achievement
+                    if (achievement != EAchievement.None)
+                    {
+                        GameManager.Instance.PlayerData.AddAchievement(achievement, 9999, true, true);
+                    }
+                }
+            }
+            GUILayout.EndHorizontal();
+        }
+        
+        private void DrawCallDealerOption()
+        {
+            GUILayout.BeginHorizontal();
+
+            // Draw the dot
+            DrawBlueDot();
+            
+            if (GUILayout.Button("Call Dealer"))
+            {
+                // Fetch available achievements
+                PlayData.Instance.CallMarket(true);
             }
             GUILayout.EndHorizontal();
         }
